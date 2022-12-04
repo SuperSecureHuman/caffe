@@ -1,6 +1,13 @@
-FROM nvidia/cuda:8.0-cudnn6-devel-ubuntu16.04
+FROM nvcr.io/nvidia/cuda:9.2-cudnn7-devel
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+
+ENV TZ=Asia/Kolkata
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+RUN apt update
+RUN apt install -y tzdata
+
+RUN apt-get install -y --no-install-recommends \
         build-essential \
         cmake \
         git \
@@ -20,12 +27,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         python-numpy \
         python-pip \
         python-setuptools \
-        python-scipy && \
-    rm -rf /var/lib/apt/lists/*
+        python-scipy
 
 ENV CAFFE_ROOT=/opt/caffe
 WORKDIR $CAFFE_ROOT
 
+RUN git clone https://github.com/SuperSecureHuman/caffe .
 # FIXME: use ARG instead of ENV once DockerHub supports this
 # https://github.com/docker/hub-feedback/issues/460
 #ENV CLONE_TAG=1.0
